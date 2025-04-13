@@ -60,8 +60,8 @@ void processCommand(char cmd) {
     switch (toupper(cmd)) {
         case 'F': moveMotor(true); break;   // Move forward
         case 'B': moveMotor(false); break;  // Move backward
-        case 'L': targetAngle = constrain(targetAngle - SERVO_STEP, SERVO_MIN, SERVO_MAX); break;
-        case 'R': targetAngle = constrain(targetAngle + SERVO_STEP, SERVO_MIN, SERVO_MAX); break;
+        case 'R': targetAngle = constrain(targetAngle - SERVO_STEP, SERVO_MIN, SERVO_MAX); break;
+        case 'L': targetAngle = constrain(targetAngle + SERVO_STEP, SERVO_MIN, SERVO_MAX); break;
         case 'O': stopMotor(); targetAngle = SERVO_CENTER; break; // Stop & reset steering
     }
 }
