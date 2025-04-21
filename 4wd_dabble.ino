@@ -22,42 +22,39 @@ const int rightMotorPin2PWMChannel = 5;
 const int leftMotorPin1PWMChannel = 6;
 const int leftMotorPin2PWMChannel = 7;
 
+// Flag to check if Dabble is connected
+bool dabbleConnected = false;
+
 void rotateMotor(int rightMotorSpeed, int leftMotorSpeed)
 {
   if (rightMotorSpeed < 0)
   {
-    // Going backward: Pin1 LOW, Pin2 PWM
     ledcWrite(rightMotorPin1PWMChannel, 0);
     ledcWrite(rightMotorPin2PWMChannel, abs(rightMotorSpeed));
   }
   else if (rightMotorSpeed > 0)
   {
-    // Going forward: Pin1 PWM, Pin2 LOW
     ledcWrite(rightMotorPin1PWMChannel, abs(rightMotorSpeed));
     ledcWrite(rightMotorPin2PWMChannel, 0);
   }
   else
   {
-    // Stopped: Both pins LOW
     ledcWrite(rightMotorPin1PWMChannel, 0);
     ledcWrite(rightMotorPin2PWMChannel, 0);
   }
   
   if (leftMotorSpeed < 0)
   {
-    // Going backward: Pin1 LOW, Pin2 PWM
     ledcWrite(leftMotorPin1PWMChannel, 0);
     ledcWrite(leftMotorPin2PWMChannel, abs(leftMotorSpeed));
   }
   else if (leftMotorSpeed > 0)
   {
-    // Going forward: Pin1 PWM, Pin2 LOW
     ledcWrite(leftMotorPin1PWMChannel, abs(leftMotorSpeed));
     ledcWrite(leftMotorPin2PWMChannel, 0);
   }
   else
   {
-    // Stopped: Both pins LOW
     ledcWrite(leftMotorPin1PWMChannel, 0);
     ledcWrite(leftMotorPin2PWMChannel, 0);
   }
@@ -65,17 +62,14 @@ void rotateMotor(int rightMotorSpeed, int leftMotorSpeed)
 
 void setUpPinModes()
 {
-  // Setup direction pins
   pinMode(rightMotorPin1, OUTPUT);
   pinMode(rightMotorPin2, OUTPUT);
   pinMode(leftMotorPin1, OUTPUT);
   pinMode(leftMotorPin2, OUTPUT);
   
-  // Setup SLP pin to enable the DRV8833 (required on most modules)
   pinMode(sleepPin, OUTPUT);
-  digitalWrite(sleepPin, HIGH);  // Enable the DRV8833
+  digitalWrite(sleepPin, HIGH);
 
-  // Set up PWM for all direction pins
   ledcSetup(rightMotorPin1PWMChannel, PWMFreq, PWMResolution);
   ledcSetup(rightMotorPin2PWMChannel, PWMFreq, PWMResolution);
   ledcSetup(leftMotorPin1PWMChannel, PWMFreq, PWMResolution);
@@ -97,9 +91,26 @@ void setup()
 
 void loop()
 {
+  Dabble.processInput();
+
+  // Wait until a Gamepad input is detected to mark as connected
+  if (!dabbleConnected)
+  {
+    if (GamePad.isUpPressed() || GamePad.isDownPressed() || GamePad.isLeftPressed() || GamePad.isRightPressed())
+    {
+      dabbleConnected = true;
+    }
+    else
+    {
+      // Stay idle if not connected yet
+      rotateMotor(0, 0);
+      return;
+    }
+  }
+
   int rightMotorSpeed = 0;
   int leftMotorSpeed = 0;
-  Dabble.processInput();
+
   if (GamePad.isUpPressed())
   {
     rightMotorSpeed = MAX_MOTOR_SPEED;
