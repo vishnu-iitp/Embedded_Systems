@@ -1,15 +1,15 @@
 #include <ESP32Servo.h>
 
 // Pin Definitions
-#define trigPin 5
-#define echoPin 18
+#define trigPin 33
+#define echoPin 32
 /*#define ENA 14
 #define ENB 13*/
-#define IN1 27
-#define IN2 26
-#define IN3 25
-#define IN4 33
-#define servoPin 15
+#define IN1 14
+#define IN2 27
+#define IN3 26
+#define IN4 25
+#define servoPin 13
 
 Servo myServo;
 
